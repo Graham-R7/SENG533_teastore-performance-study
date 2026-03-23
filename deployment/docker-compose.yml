@@ -13,7 +13,7 @@ services:
   db:
     image: descartesresearch/teastore-db
     ports:
-      - "13306:3306"
+      - "3306:3306"
 
   persistence:
     image: descartesresearch/teastore-persistence
@@ -29,11 +29,11 @@ services:
   auth:
     image: descartesresearch/teastore-auth
     ports:
-      - "12222:8080"
+      - "2222:8080"
     environment:
       - REGISTRY_HOST=registry
       - REGISTRY_PORT=10000
-      - SERVICE_PORT=12222
+      - SERVICE_PORT=2222
 
   recommender:
     image: descartesresearch/teastore-recommender
