@@ -1,0 +1,91 @@
+services:
+
+  registry:
+    image: descartesresearch/teastore-registry
+    ports:
+      - "${TEASTORE_REGISTRY_PORT:-10000}:8080"
+    environment:
+      - SERVICE_PORT=8080
+      - HOST_NAME=registry
+    restart: always
+
+  db:
+    image: descartesresearch/teastore-db
+    ports:
+      - "${TEASTORE_DB_PORT:-3308}:3306"
+    restart: always
+
+  persistence:
+    image: descartesresearch/teastore-persistence
+    ports:
+      - "${TEASTORE_PERSISTENCE_PORT:-1111}:8080"
+    depends_on:
+      - db
+      - registry
+    environment:
+      - REGISTRY_HOST=registry
+      - REGISTRY_PORT=8080
+      - SERVICE_PORT=8080
+      - HOST_NAME=persistence
+      - DB_HOST=db
+      - DB_PORT=3306
+    restart: always
+
+  auth:
+    image: descartesresearch/teastore-auth
+    ports:
+      - "${TEASTORE_AUTH_PORT:-2222}:8080"
+    depends_on:
+      - persistence
+      - registry
+    environment:
+      - REGISTRY_HOST=registry
+      - REGISTRY_PORT=8080
+      - SERVICE_PORT=8080
+      - HOST_NAME=auth
+    restart: always
+
+  recommender:
+    image: descartesresearch/teastore-recommender
+    ports:
+      - "${TEASTORE_RECOMMENDER_PORT:-3333}:8080"
+    depends_on:
+      - persistence
+      - registry
+    environment:
+      - REGISTRY_HOST=registry
+      - REGISTRY_PORT=8080
+      - SERVICE_PORT=8080
+      - HOST_NAME=recommender
+    restart: always
+
+  image:
+    image: descartesresearch/teastore-image
+    ports:
+      - "${TEASTORE_IMAGE_PORT:-4444}:8080"
+    depends_on:
+      - persistence
+      - registry
+    environment:
+      - REGISTRY_HOST=registry
+      - REGISTRY_PORT=8080
+      - SERVICE_PORT=8080
+      - HOST_NAME=image
+    restart: always
+
+  webui:
+    image: descartesresearch/teastore-webui
+    ports:
+      - "${TEASTORE_WEBUI_PORT:-8080}:8080"
+    depends_on:
+      - auth
+      - persistence
+      - recommender
+      - image
+      - registry
+    environment:
+      - REGISTRY_HOST=registry
+      - REGISTRY_PORT=8080
+      - SERVICE_PORT=8080
+      - HOST_NAME=webui
+    restart: always

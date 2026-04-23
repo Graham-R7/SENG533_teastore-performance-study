@@ -1,0 +1,32 @@
+services:
+
+  loadgenerator:
+    image: ${LIMBO_IMAGE_NAME:-teastore-limbo-client:latest}
+    build:
+      context: ../load-generator-director
+      dockerfile: Dockerfile
+    working_dir: /opt/limbo
+    command: ["java", "-jar", "/opt/limbo/httploadgenerator.jar", "loadgenerator"]
+    expose:
+      - "5000"
+
+  director:
+    image: ${LIMBO_IMAGE_NAME:-teastore-limbo-client:latest}
+    build:
+      context: ../load-generator-director
+      dockerfile: Dockerfile
+    working_dir: /opt/limbo
+    depends_on:
+      - loadgenerator
+    environment:
+      - TEASTORE_HOST=${TEASTORE_HOST:-10.1.1.1}
+      - TEASTORE_PORT=${TEASTORE_PORT:-8080}
+      - LOADGEN_HOST=${LOADGEN_HOST:-loadgenerator}
+      - LOADGEN_PORT=${LOADGEN_PORT:-5000}
+      - WORKLOAD_INTENSITY=${WORKLOAD_INTENSITY:-low}
+      - WARMUP_SECS=${WARMUP_SECS:-30}
+      - MAX_THREADS=${MAX_THREADS:-256}
+      - AUTO_START=${AUTO_START:-1}
+    command: ["./director-start.sh"]
+    volumes:
+      - ../load-generator-director/results:/opt/limbo/results

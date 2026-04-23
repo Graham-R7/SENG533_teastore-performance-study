@@ -7,7 +7,10 @@
 --[[
 	Global Variables. Initialized at load driver startup.
 --]]
-prefix = "http://10.1.1.1:8080/tools.descartes.teastore.webui/"
+local teastoreHost = os.getenv("TEASTORE_HOST") or "10.1.1.1"
+local teastorePort = os.getenv("TEASTORE_PORT") or "8080"
+
+prefix = "http://" .. teastoreHost .. ":" .. teastorePort .. "/tools.descartes.teastore.webui/"
 productviewcount = 30
 postIndex = {3, 11}
 
