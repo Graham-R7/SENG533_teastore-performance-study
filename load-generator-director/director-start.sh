@@ -9,8 +9,8 @@
 
 set -euo pipefail
 
-LOADGEN_HOST="192.168.1.100"       
-LOADGEN_PORT=5000                  
+LOADGEN_HOST="192.168.1.110"       
+LOADGEN_PORT=4444                  
 
 WARMUP_SECS=30                     
 MAX_THREADS=256                    
